@@ -124,7 +124,7 @@ export default app;
 
 // Start server when run locally
 if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 5001;
   app.listen(PORT, () =>
     console.log(`🚀 Server running on http://localhost:${PORT}`)
   );
