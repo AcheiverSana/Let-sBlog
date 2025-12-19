@@ -7,6 +7,9 @@ import authRoutes from './src/routes/auth.route.js';
 import postRoutes from './src/routes/post.route.js';
 import commentRoutes from './src/routes/comment.route.js';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+
+
 
 // Configure environment variables
 if (process.env.NODE_ENV !== 'production') {
@@ -14,6 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const app = express();
+const __dirname = path.resolve();
 
 // CORS configuration - UPDATE THESE DOMAINS WHEN YOU DEPLOY
 app.use(
@@ -106,6 +110,11 @@ app.use('/api/user', connectMiddleware, userRoutes);
 app.use('/api/auth', connectMiddleware, authRoutes);
 app.use('/api/post', connectMiddleware, postRoutes);
 app.use('/api/comment', connectMiddleware, commentRoutes);
+
+app.use(express.static(path.join(__dirname, '/Frontend/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'Frontend', 'dist', 'index.html'));
+});
 
 // Error handling
 app.use((err, req, res, next) => {
