@@ -120,3 +120,12 @@ app.use((err, req, res, next) => {
 
 // Export for Vercel
 export default app;
+
+
+// Start server when run locally
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () =>
+    console.log(`🚀 Server running on http://localhost:${PORT}`)
+  );
+}
