@@ -36,7 +36,7 @@ const connectDB = async () => {
   if (isConnected) return;
 
   try {
-    await mongoose.connect(MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       maxPoolSize: 1,
@@ -77,7 +77,7 @@ app.get('/api/debug', (req, res) => {
   res.json({
     message: 'Debug info',
     nodeEnv: process.env.NODE_ENV,
-    hasMongoEnv: !!process.env.MONGO,
+    hasMongoEnv: !!process.env.MONGO_URI,
     hasJwtSecret: !!process.env.JWT_SECRET,
     timestamp: new Date(),
   });
