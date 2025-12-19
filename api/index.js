@@ -19,17 +19,10 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 const __dirname = path.resolve();
 
-// CORS configuration - UPDATE THESE DOMAINS WHEN YOU DEPLOY
+// CORS configuration - Allow all origins
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? [
-            'https://blog.100jsprojects.com',
-            'https://mern-blog-client-steel.vercel.app',
-            /\.vercel\.app$/,
-          ]
-        : ['http://localhost:5173', 'http://localhost:3000'],
+    origin: true, // Reflect the request origin, or set to '*' for all (but can't use with credentials)
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
@@ -112,9 +105,10 @@ app.use('/api/post', connectMiddleware, postRoutes);
 app.use('/api/comment', connectMiddleware, commentRoutes);
 
 app.use(express.static(path.join(__dirname, '/Frontend/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'Frontend', 'dist', 'index.html'));
-});
+// Catch-all route for frontend - disabled due to Express 5 compatibility issue
+// app.get('/:path(.*)', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'Frontend', 'dist', 'index.html'));
+// });
 
 // Error handling
 app.use((err, req, res, next) => {
