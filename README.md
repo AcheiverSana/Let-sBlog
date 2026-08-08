@@ -87,6 +87,10 @@ api/                       # Express REST API
   index.js                   # App entrypoint: CORS, rate limiting, DB connection, route mounting
 
 .github/workflows/ci.yml    # Runs the full test suite + lint + build on every push/PR
+
+e2e/                        # Playwright end-to-end tests (real browser, real UI)
+  tests/                     # Spec files: navigation, auth, posts, protected-routes
+  playwright.config.js        # Boots the Vite dev server automatically for local/CI runs
 ```
 
 **Request flow for a protected write** (e.g. creating a comment):
@@ -198,12 +202,15 @@ The client dev server runs at `http://localhost:5173` and proxies `/api` request
 ```bash
 cd api && npm test       # 19 tests: validators, JWT middleware, comment-like toggle logic, error handling
 cd client && npm test     # 11 tests: PostCard rendering, Footer links, ErrorBoundary, comment permission rules
+cd e2e && npm test         # Playwright end-to-end tests, run against a real browser + the live app
 ```
 
 Backend tests mock Mongoose models directly — no live database required — so they run fast and deterministically. Frontend tests use React Testing Library with a minimal mock Redux store. A few tests are specifically **regression guards** for real bugs that happened during development:
 - `Footer.test.jsx` checks the GitHub link spelling, after a real typo (`AcheiverSana` vs `AchieverSana`) once broke it in production
 - `Comment.test.jsx` locks in the author-only-edit / author-or-admin-delete permission split, so it can't silently regress
 - `ErrorBoundary.test.jsx` proves the fallback UI actually renders on a real component crash, not just in theory
+
+End-to-end tests live in [`e2e/`](./e2e/README.md) and drive the actual client UI (navigation, sign in/up validation, search filters, protected-route redirects) across Chromium, Firefox, WebKit, and a mobile viewport. Most run against an empty database by default; a couple that need real data (a full signup→signin flow, viewing a specific post) are opt-in via env vars — see the e2e README for details.
 
 ---
 
@@ -214,6 +221,7 @@ Every push and pull request to `main` automatically runs via GitHub Actions (`.g
 - Runs the full test suite on both
 - Lints the client (zero errors/warnings allowed — `--max-warnings 0`)
 - Builds the client for production
+- Runs the Playwright E2E suite against the built client, uploading the HTML report as a build artifact
 
 This catches broken code before it's merged, not after it's deployed.
 
